@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Surat Tugas Marine Inspector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: 'Inter', sans-serif; min-height: 100vh; }
+    .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .preview-st { border: 1px solid #e5e7eb; background: white; padding: 20px; margin-top: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .icon-input { position: relative; }
+    .icon-input i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #6b7280; }
+    .icon-input input, .icon-input select { padding-left: 40px; }
+  </style>
+</head>
+<body class="p-4 md:p-6">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 card">
+    <div class="text-center mb-6">
+      <i class="fas fa-ship text-4xl text-indigo-600 mb-2"></i>
+      <h1 class="text-2xl md:text-3xl font-bold text-indigo-700">📄 SISTEM SURAT TUGAS MARINE INSPECTOR</h1>
+      <p class="text-gray-600 mt-2">Kelola surat tugas dengan mudah dan efisien</p>
+    </div>
+    
+    <form id="stForm" class="space-y-6">
+      <!-- Nama Marine -->
+      <div class="icon-input">
+        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-user-tie mr-2"></i>Nama Marine Inspector</label>
+        <select id="namaMarine" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></select>
+      </div>
+
+      <!-- Nama Perusahaan -->
+      <div class="icon-input">
+        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-building mr-2"></i>Nama Perusahaan</label>
+        <input type="text" id="namaPerusahaan" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Masukkan nama perusahaan..." required>
+      </div>
+
+      <!-- Nama Kapal -->
+      <div class="icon-input">
+        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-anchor mr-2"></i>Nama Kapal</label>
+        <input type="text" id="namaKapal" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="Masukkan nama kapal..." required>
+      </div>
+
+      <!-- Penandatangan -->
+      <div class="icon-input">
+        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-signature mr-2"></i>Pejabat Penandatangan</label>
+        <select id="penandatangan" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></select>
+      </div>
+
+      <!-- Tombol Simpan -->
+      <div class="text-center">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl">
+          <i class="fas fa-save mr-2"></i>Simpan & Preview
+        </button>
+      </div>
+    </form>
+
+    <!-- PREVIEW ST -->
+    <div id="preview" class="preview-st hidden mt-8">
+      <div class="text-center mb-4">
+        <i class="fas fa-file-alt text-3xl text-green-600"></i>
+        <h2 class="text-xl font-bold text-gray-800 mt-2">SURAT TUGAS</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
+        <p><strong><i class="fas fa-hashtag mr-1"></i>Nomor:</strong> <span id="nomorST"></span></p>
+        <p><strong><i class="fas fa-user mr-1"></i>Marine Inspector:</strong> <span id="marineInfo"></span></p>
+        <p><strong><i class="fas fa-building mr-1"></i>Perusahaan:</strong> <span id="perusahaanInfo"></span></p>
+        <p><strong><i class="fas fa-anchor mr-1"></i>Kapal:</strong> <span id="kapalInfo"></span></p>
+        <p><strong><i class="fas fa-signature mr-1"></i>Penandatangan:</strong> <span id="ttdInfo"></span></p>
+        <p><strong><i class="fas fa-calendar mr-1"></i>Tanggal:</strong> <span id="tanggalInfo"></span></p>
+      </div>
+      <div class="text-center mt-6">
+        <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl">
+          <i class="fas fa-print mr-2"></i>Cetak ST
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHrMwcTesyKnGizcpKc_RoGXrO0xRhr-w0DuGXfDLBmAIDE4kGF4Sryn8kG_i5uw/exec";
+
+    // === Ambil data dropdown dari Google Sheet ===
+    async function loadDropdowns() {
+      const res = await fetch(`${SCRIPT_URL}?action=getDropdownData`);
+      const data = await res.json();
+
+      const marineSelect = document.getElementById('namaMarine');
+      data.marine.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify(m);
+        opt.textContent = `${m.nama} (${m.nip})`;
+        marineSelect.appendChild(opt);
+      });
+
+      const ttdSelect = document.getElementById('penandatangan');
+      data.penandatangan.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify(p);
+        opt.textContent = `${p.jabatan} - ${p.nama}`;
+        ttdSelect.appendChild(opt);
+      });
+    }
+
+    // === Proses simpan data ===
+    document.getElementById('stForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const marine = JSON.parse(document.getElementById('namaMarine').value);
+      const ttd = JSON.parse(document.getElementById('penandatangan').value);
+      const formData = {
+        namaMarine: marine.nama,
+        nipMarine: marine.nip,
+        namaPerusahaan: document.getElementById('namaPerusahaan').value,
+        namaKapal: document.getElementById('namaKapal').value,
+        jabatanTtd: ttd.jabatan,
+        namaTtd: ttd.nama,
+        nipTtd: ttd.nip
+      };
+
+      const res = await fetch(`${SCRIPT_URL}?action=simpanDataST`, {
+        method: "POST",
+        body: JSON.stringify(formData)
+      });
+      const hasil = await res.json();
+
+      if (hasil.status === 'ok') {
+        const preview = document.getElementById('preview');
+        document.getElementById('nomorST').textContent = hasil.nomorST;
+        document.getElementById('marineInfo').textContent = `${formData.namaMarine} (${formData.nipMarine})`;
+        document.getElementById('perusahaanInfo').textContent = formData.namaPerusahaan;
+        document.getElementById('kapalInfo').textContent = formData.namaKapal;
+        document.getElementById('ttdInfo').textContent = `${formData.jabatanTtd} - ${formData.namaTtd}`;
+        document.getElementById('tanggalInfo').textContent = new Date().toLocaleDateString('id-ID');
+        preview.classList.remove('hidden');
+        preview.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    loadDropdowns();
+  </script>
+</body>
+</html>
