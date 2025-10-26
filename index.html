@@ -6,199 +6,367 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistem Surat Tugas Marine Inspector</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
   <style>
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
+      background-color: #001f3f;
+      color: #fff;
+      font-family: Arial, sans-serif;
     }
 
-    .card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .btn-gold {
+      background-color: #FFD700;
+      color: #001f3f;
+      font-weight: bold;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    .btn-gold:hover {
+      background-color: #E6C200;
     }
 
-    .preview-st {
-      border: 1px solid #e5e7eb;
+    .modal {
+      display: none;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    input,
+    select {
+      color: #001f3f !important;
+    }
+
+    .surat-layout {
+      font-family: 'Times New Roman', serif;
+      font-size: 12pt;
       background: white;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color: #000;
+      padding: 40px;
+      line-height: 1.5;
+      width: 700px;
+      margin: auto;
     }
 
-    .icon-input {
-      position: relative;
+    .center {
+      text-align: center;
     }
 
-    .icon-input i {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6b7280;
-    }
-
-    .icon-input input,
-    .icon-input select {
-      padding-left: 40px;
+    .justify {
+      text-align: justify;
     }
   </style>
 </head>
 
-<body class="p-4 md:p-6">
-
-  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 card">
-    <div class="text-center mb-6">
-      <i class="fas fa-ship text-4xl text-indigo-600 mb-2"></i>
-      <h1 class="text-2xl md:text-3xl font-bold text-indigo-700">📄 SISTEM SURAT TUGAS MARINE INSPECTOR</h1>
-      <p class="text-gray-600 mt-2">Kelola surat tugas dengan mudah dan efisien</p>
+<body class="font-sans">
+  <div class="container mx-auto p-6 max-w-4xl">
+    <!-- HEADER -->
+    <div class="flex flex-col items-center mb-8 text-center">
+      <div class="flex items-center justify-center mb-2">
+        <img src="KEMENHUB LOGO.png" alt="Logo Kemenhub" class="h-24 mr-4">
+        <h1 class="text-3xl font-bold text-yellow-400">SISTEM SURAT TUGAS MARINE INSPECTOR</h1>
+      </div>
+      <p class="text-white text-sm uppercase tracking-wide">Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru</p>
     </div>
 
-    <form id="stForm" class="space-y-6">
-      <!-- Nama Marine -->
-      <div class="icon-input">
-        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-user-tie mr-2"></i>Nama Marine
-          Inspector</label>
-        <select id="namaMarine"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></select>
-      </div>
+    <!-- FORM -->
+    <div class="bg-white text-navy p-6 rounded-lg shadow-lg mb-8">
+      <form id="stForm">
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Nomor ST</label>
+          <input type="text" id="nomorST" class="w-full p-2 border rounded" readonly>
+        </div>
 
-      <!-- Nama Perusahaan -->
-      <div class="icon-input">
-        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-building mr-2"></i>Nama
-          Perusahaan</label>
-        <input type="text" id="namaPerusahaan"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-          placeholder="Masukkan nama perusahaan..." required>
-      </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Marine Inspector (bisa pilih lebih dari satu)</label>
+          <select id="inspector" class="w-full p-2 border rounded" multiple size="4">
+            <option value="Irwan Josua Hutajulu, S.Si.T, M.H - NIP. 19730927 200912 1 001">Irwan Josua Hutajulu, S.Si.T, M.H - NIP. 19730927 200912 1 001</option>
+            <option value="Anton Sujarwadi, S.Si.T, M.M - NIP. 19800622 200812 1 001">Anton Sujarwadi, S.Si.T, M.M - NIP. 19800622 200812 1 001</option>
+            <option value="Harno Siagian - NIP. 19761006 200712 1 002">Harno Siagian - NIP. 19761006 200712 1 002</option>
+            <option value="Bustanul Arifin, S.AP. - NIP. 19750110 200912 1 001">Bustanul Arifin, S.AP. - NIP. 19750110 200912 1 001</option>
+          </select>
+          <small class="text-gray-600">Tahan CTRL (atau Command di Mac) untuk memilih lebih dari satu.</small>
+        </div>
 
-      <!-- Nama Kapal -->
-      <div class="icon-input">
-        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-anchor mr-2"></i>Nama Kapal</label>
-        <input type="text" id="namaKapal"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-          placeholder="Masukkan nama kapal..." required>
-      </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Nama Perusahaan</label>
+          <input type="text" id="namaPerusahaan" class="w-full p-2 border rounded" placeholder="Masukkan nama perusahaan">
+        </div>
 
-      <!-- Tanggal Pemeriksaan -->
-      <div class="icon-input">
-        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-calendar-day mr-2"></i>Tanggal
-          Pemeriksaan</label>
-        <input type="date" id="tanggalPemeriksaan"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-          required>
-      </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Nama Kapal</label>
+          <input type="text" id="namaKapal" class="w-full p-2 border rounded" placeholder="Masukkan nama kapal">
+        </div>
 
-      <!-- Penandatangan -->
-      <div class="icon-input">
-        <label class="font-semibold block mb-2 text-gray-700"><i class="fas fa-signature mr-2"></i>Pejabat
-          Penandatangan</label>
-        <select id="penandatangan"
-          class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></select>
-      </div>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Tanggal Pemeriksaan</label>
+          <input type="date" id="tanggalPemeriksaan" class="w-full p-2 border rounded">
+        </div>
 
-      <!-- Tombol Simpan -->
-      <div class="text-center">
-        <button type="submit"
-          class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl">
-          <i class="fas fa-save mr-2"></i>Simpan & Preview
-        </button>
-      </div>
-    </form>
+        <div class="mb-4">
+          <label class="block text-sm font-bold mb-2">Tanggal Terbit ST</label>
+          <input type="date" id="tanggalTerbit" class="w-full p-2 border rounded">
+        </div>
 
-    <!-- PREVIEW ST -->
-    <div id="preview" class="preview-st hidden mt-8">
-      <div class="text-center mb-4">
-        <i class="fas fa-file-alt text-3xl text-green-600"></i>
-        <h2 class="text-xl font-bold text-gray-800 mt-2">SURAT TUGAS</h2>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm md:text-base">
-        <p><strong><i class="fas fa-hashtag mr-1"></i>Nomor:</strong> <span id="nomorST"></span></p>
-        <p><strong><i class="fas fa-user mr-1"></i>Marine Inspector:</strong> <span id="marineInfo"></span></p>
-        <p><strong><i class="fas fa-building mr-1"></i>Perusahaan:</strong> <span id="perusahaanInfo"></span></p>
-        <p><strong><i class="fas fa-anchor mr-1"></i>Kapal:</strong> <span id="kapalInfo"></span></p>
-        <p><strong><i class="fas fa-signature mr-1"></i>Penandatangan:</strong> <span id="ttdInfo"></span></p>
-        <p><strong><i class="fas fa-calendar mr-1"></i>Tanggal:</strong> <span id="tanggalInfo"></span></p>
-      </div>
-      <div class="text-center mt-6">
-        <button onclick="window.print()"
-          class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl">
-          <i class="fas fa-print mr-2"></i>Cetak ST
-        </button>
+        <div class="flex space-x-4 mt-6">
+          <button type="button" id="previewBtn" class="btn-gold px-4 py-2 rounded"><i class="fas fa-eye"></i> Preview</button>
+          <button type="button" id="downloadBtn" class="btn-gold px-4 py-2 rounded"><i class="fas fa-download"></i> Download PDF</button>
+          <button type="button" id="printBtn" class="btn-gold px-4 py-2 rounded"><i class="fas fa-print"></i> Print</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- MODAL PREVIEW -->
+    <div id="previewModal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center">
+      <div class="bg-white p-6 rounded-lg max-w-3xl w-full overflow-auto max-h-[90vh]">
+        <div id="previewContent" class="surat-layout"></div>
+        <button id="closePreview" class="btn-gold px-4 py-2 rounded mt-4">Tutup</button>
       </div>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHrMwcTesyKnGizcpKc_RoGXrO0xRhr-w0DuGXfDLBmAIDE4kGF4Sryn8kG_i5uw/exec";
+    const { jsPDF } = window.jspdf;
+    let currentNomor = 1;
+    let logoBase64 = null;
 
-    // === Ambil data dropdown dari Google Sheet ===
-    async function loadDropdowns() {
-      const res = await fetch(`${SCRIPT_URL}?action=getDropdownData`);
-      const data = await res.json();
-
-      const marineSelect = document.getElementById('namaMarine');
-      data.marine.forEach(m => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(m);
-        opt.textContent = `${m.nama} (${m.nip})`;
-        marineSelect.appendChild(opt);
-      });
-
-      const ttdSelect = document.getElementById('penandatangan');
-      data.penandatangan.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(p);
-        opt.textContent = `${p.jabatan} - ${p.nama}`;
-        ttdSelect.appendChild(opt);
+    function loadLogo() {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = 'KEMENHUB LOGO.png';
+        img.crossOrigin = 'Anonymous';
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          logoBase64 = canvas.toDataURL('image/png');
+          resolve();
+        };
+        img.onerror = reject;
       });
     }
 
-    // === Proses simpan data ===
-    document.getElementById('stForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const marine = JSON.parse(document.getElementById('namaMarine').value);
-      const ttd = JSON.parse(document.getElementById('penandatangan').value);
-
-      const formData = {
-        namaMarine: marine.nama,
-        nipMarine: marine.nip,
-        namaPerusahaan: document.getElementById('namaPerusahaan').value,
-        namaKapal: document.getElementById('namaKapal').value,
-        jabatanTtd: ttd.jabatan,
-        namaTtd: ttd.nama,
-        nipTtd: ttd.nip,
-        tanggalPemeriksaan: document.getElementById('tanggalPemeriksaan').value  // ⬅️ tambahan baru
-      };
-
-      const res = await fetch(`${SCRIPT_URL}?action=simpanDataST`, {
-        method: "POST",
-        body: JSON.stringify(formData)
-      });
-      const hasil = await res.json();
-
-      if (hasil.status === 'ok') {
-        const preview = document.getElementById('preview');
-        document.getElementById('nomorST').textContent = hasil.nomorST;
-        document.getElementById('marineInfo').textContent = `${formData.namaMarine} (${formData.nipMarine})`;
-        document.getElementById('perusahaanInfo').textContent = formData.namaPerusahaan;
-        document.getElementById('kapalInfo').textContent = formData.namaKapal;
-        document.getElementById('ttdInfo').textContent = `${formData.jabatanTtd} - ${formData.namaTtd}`;
-        document.getElementById('tanggalInfo').textContent = new Date(formData.tanggalPemeriksaan).toLocaleDateString('id-ID');
-        preview.classList.remove('hidden');
-        preview.scrollIntoView({ behavior: 'smooth' });
-      }
+    window.addEventListener('load', async () => {
+      try { await loadLogo(); } catch (e) { console.error('Logo gagal dimuat:', e); }
+      updateNomor();
     });
 
+    function updateNomor() {
+      document.getElementById('nomorST').value = `ST-KSOP.PKU ${String(currentNomor).padStart(3, '0')} Tahun 2025`;
+    }
 
-    loadDropdowns();
+    function formatTanggalPemeriksaan(tgl) {
+      if (!tgl) return '';
+      const d = new Date(tgl);
+      const hari = d.toLocaleDateString('id-ID', { weekday: 'long' });
+      const tanggal = d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      return `${hari}, ${tanggal}`;
+    }
+
+    function formatTanggalTerbit(tgl) {
+      if (!tgl) return '';
+      const d = new Date(tgl);
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      document.getElementById('previewContent').innerHTML = generateSuratContent();
+      document.getElementById('previewModal').classList.add('show');
+    });
+
+    document.getElementById('closePreview').addEventListener('click', () => {
+      document.getElementById('previewModal').classList.remove('show');
+    });
+
+    function generateSuratContent() {
+      const nomorST = document.getElementById('nomorST').value;
+      const inspectors = Array.from(document.getElementById('inspector').selectedOptions).map(opt => opt.value);
+      const namaPerusahaan = document.getElementById('namaPerusahaan').value;
+      const namaKapal = document.getElementById('namaKapal').value;
+      const tanggalPemeriksaan = document.getElementById('tanggalPemeriksaan').value;
+      const tanggalTerbit = document.getElementById('tanggalTerbit').value;
+      const tanggalPeriksa = formatTanggalPemeriksaan(tanggalPemeriksaan);
+      const tanggalST = formatTanggalTerbit(tanggalTerbit);
+
+      let daftarInspector = '';
+      inspectors.forEach((val, i) => {
+        const [nama, nip] = val.split(' - ');
+        daftarInspector += `${i + 1}. ${nama}<br>NIP. ${nip.replace('NIP. ', '')}<br>`;
+      });
+
+      return `
+      <div style="text-align:center;">
+        <table style="width:100%; border-collapse:collapse;">
+          <tr>
+            <td style="width:110px; text-align:center;">
+              <img src="KEMENHUB LOGO.png" width="100">
+            </td>
+            <td>
+              <p><strong>KEMENTERIAN PERHUBUNGAN</strong><br>
+              DIREKTORAT JENDERAL PERHUBUNGAN LAUT<br>
+              <strong>KANTOR KESYAHBANDARAN DAN OTORITAS PELABUHAN KELAS II PEKANBARU</strong><br>
+              JL. KAMPUNG DALAM NO. 1 Telp : (0761) 22827, 29408 FAX: (0761) 29404<br>
+              PEKANBARU - 28152 Email : adpelpekanbaru@yahoo.com TLX: 5316/6926</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <hr style="border:1px solid #000;">
+      <div style="text-align:center; margin-top:10px;">
+        <strong><u>SURAT TUGAS</u></strong><br>
+        Nomor ${nomorST}
+      </div>
+      <div style="margin-top:25px; text-align:center;">
+        Kepala Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru
+      </div>
+      <div style="margin-top:20px;">
+        <strong>Dasar :</strong><br>
+        1. Undang-Undang Nomor 17 tahun 2008 tentang Pelayaran;<br>
+        2. Peraturan Pemerintah Nomor 31 Tahun 2021 tentang Penyelenggaraan Bidang Pelayaran;<br>
+        3. Peraturan Menteri Perhubungan Nomor 7 Tahun 2024 tentang Harmonisasi Sistem Pemeriksaan dan Sertifikasi pada Kapal Berbendera Indonesia;<br>
+        4. Peraturan Direktur Jenderal Perhubungan Laut No.HK.103/2/19/DJPL-16 tentang Tata Cara Pelaksanaan Penyelenggaraan Kelaiklautan Kapal;<br>
+        5. Surat Permohonan ${namaPerusahaan};<br>
+        6. Untuk Kepentingan Dinas.<br><br>
+
+        <strong>Memberi Tugas</strong><br>
+        <strong>Kepada :</strong><br>
+        ${daftarInspector}<br>
+
+        <strong>Untuk :</strong><br>
+        1. Melaksanakan Pemeriksaan Kapal ${namaKapal} yang akan dilaksanakan pada ${tanggalPeriksa} bertempat di Pekanbaru;<br>
+        2. Melaporkan hasil pelaksanaan tugas kepada Kepala Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru;<br>
+        3. Surat Tugas ini berlaku mulai tanggal ${tanggalPeriksa} sampai dengan selesai.<br><br>
+
+        <div style="text-align:right;">
+          Pekanbaru, ${tanggalST}<br>
+          An. Kepala Kantor,<br>
+          Kasi Status Hukum dan Sertifikasi Kapal<br><br><br>
+          <strong>Irwan Josua Hutajulu, S.Si.T, M.H</strong><br>
+          NIP. 19730927 200912 1 001
+        </div><br><br>
+
+        <strong>Tembusan :</strong><br>
+        1. Kasubbag TU;<br>
+        2. Direktur ${namaPerusahaan};<br>
+        3. Yang bersangkutan;<br>
+        4. Arsip.
+      </div>`;
+    }
+
+    document.getElementById('downloadBtn').addEventListener('click', async () => {
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const marginLeft = 25;
+      let y = 25;
+      doc.setFont('times', 'normal');
+      doc.setFontSize(12);
+
+      if (logoBase64) doc.addImage(logoBase64, 'PNG', marginLeft, y - 10, 60, 60);
+      doc.setFont('times', 'bold');
+      doc.text('KEMENTERIAN PERHUBUNGAN', 105, y + 10, { align: 'center' });
+      doc.setFont('times', 'normal');
+      doc.text('DIREKTORAT JENDERAL PERHUBUNGAN LAUT', 105, y + 16, { align: 'center' });
+      doc.setFont('times', 'bold');
+      doc.text('KANTOR KESYAHBANDARAN DAN OTORITAS PELABUHAN KELAS II PEKANBARU', 105, y + 22, { align: 'center' });
+      doc.setFont('times', 'normal');
+      doc.text('JL. KAMPUNG DALAM NO. 1 Telp : (0761) 22827, 29408 FAX: (0761) 29404', 105, y + 28, { align: 'center' });
+      doc.text('PEKANBARU - 28152 Email : adpelpekanbaru@yahoo.com TLX: 5316/6926', 105, y + 34, { align: 'center' });
+
+      y += 45;
+      doc.line(25, y, 185, y);
+
+      y += 15;
+      doc.setFont('times', 'bold');
+      doc.text('SURAT TUGAS', 105, y, { align: 'center' });
+      doc.setFont('times', 'normal');
+      y += 6;
+      doc.text(`Nomor ${document.getElementById('nomorST').value}`, 105, y, { align: 'center' });
+
+      y += 15;
+      doc.text('Kepala Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru', 105, y, { align: 'center' });
+      y += 10;
+
+      doc.text('Dasar :', marginLeft, y);
+      const dasarList = [
+        '1. Undang-Undang Nomor 17 tahun 2008 tentang Pelayaran;',
+        '2. Peraturan Pemerintah Nomor 31 Tahun 2021 tentang Penyelenggaraan Bidang Pelayaran;',
+        '3. Peraturan Menteri Perhubungan Nomor 7 Tahun 2024 tentang Harmonisasi Sistem Pemeriksaan dan Sertifikasi pada Kapal Berbendera Indonesia;',
+        '4. Peraturan Direktur Jenderal Perhubungan Laut No.HK.103/2/19/DJPL-16 tentang Tata Cara Pelaksanaan Penyelenggaraan Kelaiklautan Kapal;',
+        `5. Surat Permohonan ${document.getElementById('namaPerusahaan').value};`,
+        '6. Untuk Kepentingan Dinas.'
+      ];
+      y += 6;
+      dasarList.forEach(line => { doc.text(line, marginLeft + 5, y, { maxWidth: 160 }); y += 7; });
+
+      y += 5;
+      doc.setFont('times', 'bold');
+      doc.text('Memberi Tugas', marginLeft, y);
+      doc.setFont('times', 'normal');
+      y += 7;
+      doc.text('Kepada :', marginLeft, y);
+      y += 7;
+
+      const inspectors = Array.from(document.getElementById('inspector').selectedOptions).map(opt => opt.value);
+      inspectors.forEach((val, i) => {
+        const [nama, nip] = val.split(' - ');
+        doc.text(`${i + 1}. ${nama}`, marginLeft + 5, y);
+        y += 6;
+        doc.text(`NIP. ${nip.replace('NIP. ', '')}`, marginLeft + 10, y);
+        y += 6;
+      });
+
+      y += 5;
+      doc.text('Untuk :', marginLeft, y);
+      y += 7;
+
+      const namaKapal = document.getElementById('namaKapal').value;
+      const tanggalPemeriksaanStr = formatTanggalPemeriksaan(document.getElementById('tanggalPemeriksaan').value);
+      const tanggalTerbitStr = formatTanggalTerbit(document.getElementById('tanggalTerbit').value);
+      const tugas = [
+        `1. Melaksanakan Pemeriksaan Kapal ${namaKapal} yang akan dilaksanakan pada ${tanggalPemeriksaanStr} bertempat di Pekanbaru;`,
+        '2. Melaporkan hasil pelaksanaan tugas kepada Kepala Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru;',
+        `3. Surat Tugas ini berlaku mulai tanggal ${tanggalPemeriksaanStr} sampai dengan selesai.`
+      ];
+      tugas.forEach(line => { doc.text(line, marginLeft + 5, y, { maxWidth: 160 }); y += 8; });
+
+      y += 15;
+      doc.text(`Pekanbaru, ${tanggalTerbitStr}`, 140, y);
+      y += 7;
+      doc.text('An. Kepala Kantor,', 140, y);
+      y += 6;
+      doc.text('Kasi Status Hukum dan Sertifikasi Kapal', 140, y);
+      y += 25;
+      doc.setFont('times', 'bold');
+      doc.text('Irwan Josua Hutajulu, S.Si.T, M.H', 140, y);
+      doc.setFont('times', 'normal');
+      y += 6;
+      doc.text('NIP. 19730927 200912 1 001', 140, y);
+
+      y += 15;
+      doc.text('Tembusan :', marginLeft, y);
+      const tembus = [
+        '1. Kasubbag TU;',
+        `2. Direktur ${document.getElementById('namaPerusahaan').value};`,
+        '3. Yang bersangkutan;',
+        '4. Arsip.'
+      ];
+      tembus.forEach(line => { doc.text(line, marginLeft + 5, y += 6); });
+
+      doc.save('Surat_Tugas_Resmi.pdf');
+    });
+
+    document.getElementById('printBtn').addEventListener('click', () => {
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write('<html><head><title>Cetak Surat Tugas</title></head><body>');
+      printWindow.document.write(generateSuratContent());
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    });
   </script>
 </body>
 
