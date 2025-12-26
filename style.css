@@ -37,8 +37,8 @@ body {
   text-overflow: ellipsis;
 }
 
-/* UTILITY CLASS (FIX UTAMA DI SINI) */
-/* Kita tambah !important agar tidak kalah dengan display:flex di mobile */
+/* UTILITY CLASS PENTING */
+/* !important memastikan elemen ini benar-benar sembunyi */
 .hidden {
   display: none !important;
 }
@@ -413,6 +413,7 @@ li {
 
 /* ========================================= */
 /* MEDIA QUERY: MOBILE & TABLET (< 1024px) */
+/* DISINI PERBAIKANNYA */
 /* ========================================= */
 @media screen and (max-width: 1024px) {
   .navbar {
@@ -432,28 +433,36 @@ li {
     padding: 15px;
   }
 
-  /* PREVIEW CONTAINER (Center & Dark Background) */
-  /* Display Flex di sini tidak akan menimpa .hidden lagi karena .hidden pakai !important */
+  /* PERBAIKAN 1: Container Preview di Mobile */
+  /* Kita hapus style flexbox gelap yang bikin tombol hilang */
   .preview-section {
-    background-color: #525659;
-    padding: 30px 0;
     width: 100%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    border-radius: 8px;
     margin-top: 20px;
+    /* Biarkan default (block), jangan dipaksa flex */
   }
 
-  /* KERTAS A4 ZOOM OUT EFFECT */
+  /* PERBAIKAN 2: Tombol Controls agar terlihat & rapi */
+  .preview-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .preview-controls button {
+    flex-grow: 1; /* Agar tombol mengisi ruang */
+  }
+
+  /* PERBAIKAN 3: KERTAS A4 DI TENGAH (ZOOM OUT EFFECT) */
   .a4-page {
     width: 210mm !important;
     min-height: 297mm !important;
     height: auto !important;
-    margin: 0 !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+    /* Margin auto untuk menengahkan secara horizontal */
+    margin: 0 auto !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
     transform-origin: top center;
+    background: white;
   }
 }
 
@@ -461,7 +470,9 @@ li {
 @media screen and (min-width: 600px) and (max-width: 1024px) {
   .a4-page {
     transform: scale(0.7);
+    /* Tarik margin bawah agar tidak ada ruang kosong berlebih */
     margin-bottom: -100mm !important;
+    margin-top: 20px !important;
   }
 }
 
@@ -469,9 +480,11 @@ li {
 @media screen and (max-width: 599px) {
   .a4-page {
     transform: scale(0.42);
+    /* Tarik margin bawah lebih banyak */
     margin-bottom: -170mm !important;
+    margin-top: 20px !important;
   }
-  /* Layout HP */
+  /* Layout HP lainnya */
   .history-header {
     flex-direction: column;
     align-items: flex-start;
@@ -487,15 +500,22 @@ li {
 
 /* PRINT MODE */
 @media print {
+  /* Pastikan saat diprint, preview section terlihat */
+  .preview-section.hidden {
+    display: block !important;
+  }
+  /* Sembunyikan tombol controls saat print */
+  .preview-controls {
+    display: none !important;
+  }
+
   .a4-page {
     transform: none !important;
     margin: 0 auto !important;
     width: 210mm !important;
-  }
-  .preview-section {
-    background: none;
-    padding: 0;
-    display: block !important; /* Pastikan tampil saat print */
+    box-shadow: none !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
   .surat-footer {
     position: fixed;
