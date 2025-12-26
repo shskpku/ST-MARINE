@@ -30,15 +30,18 @@ body {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* UTILITY - CLASS HIDDEN */
+/* UTILITY */
 .hidden { display: none !important; }
 
-/* LAYOUT */
+/* LAYOUT UTAMA (Default: Stack/Atas-Bawah) */
 .main-container {
-  display: flex; flex-direction: column;
-  padding: 30px; gap: 30px;
+  display: flex; 
+  flex-direction: column; /* Default HP & Tablet: Atas Bawah */
+  padding: 30px; 
+  gap: 30px;
   transition: all 0.5s ease;
-  max-width: 100vw; box-sizing: border-box;
+  max-width: 100vw; 
+  box-sizing: border-box;
 }
 
 .card {
@@ -90,7 +93,7 @@ table { width: 100%; border-collapse: collapse; min-width: 800px; }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
 th { background: var(--navy); color: white; }
 
-/* A4 PREVIEW (Desktop Default) */
+/* A4 PREVIEW (Base Style) */
 .a4-page {
   width: 210mm; min-height: 297mm; padding: 10mm 15mm 10mm 20mm;
   background: white; margin: 0 auto;
@@ -130,10 +133,12 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
+
 /* ========================================= */
-/* MEDIA QUERY: DESKTOP (> 1024px) */
+/* MEDIA QUERY: HANYA UNTUK LAYAR BESAR (PC/LAPTOP) */
+/* Kita naikkan batasnya ke 1280px agar Tablet masuk ke mode Mobile (Atas-Bawah) */
 /* ========================================= */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .main-container.has-preview { flex-direction: row; }
   .form-section { width: 100%; transition: width 0.5s; }
   .main-container.has-preview .form-section { width: 40%; }
@@ -143,24 +148,30 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
 }
 
 /* ========================================= */
-/* MEDIA QUERY: TABLET & MOBILE (< 1024px) */
+/* MEDIA QUERY: TABLET & MOBILE (< 1280px) */
+/* Termasuk iPad Landscape (biasanya 1024px) */
 /* ========================================= */
-@media screen and (max-width: 1024px) {
-  .navbar { padding: 10px 15px; } .navbar h1 { font-size: 1rem; }
+@media screen and (max-width: 1279px) {
+  .navbar { padding: 10px 15px; } 
+  .navbar h1 { font-size: 1.2rem; }
   body { padding-top: 60px; }
-  .main-container, .history-section { padding: 10px; } .card { padding: 15px; }
+  .main-container, .history-section { padding: 15px; } 
+  .card { padding: 20px; }
 
-  /* CONTAINER PREVIEW: Center Alignment */
+  /* 1. KEMBALIKAN KE MODE ATAS-BAWAH */
+  .main-container { flex-direction: column; }
+  .form-section { width: 100% !important; }
+  .preview-section { width: 100% !important; margin-top: 30px; }
+
+  /* 2. PREVIEW SECTION */
   .preview-section {
-    display: flex; 
+    display: flex;
     flex-direction: column;
-    align-items: center; /* Pastikan kertas di tengah */
-    width: 100%;
-    margin-top: 20px;
+    align-items: center; 
     overflow: hidden;
   }
   
-  /* TOMBOL CONTROLS DI MOBILE/TABLET */
+  /* 3. TOMBOL CONTROLS */
   .preview-controls {
     display: flex;
     flex-wrap: wrap;
@@ -171,38 +182,37 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
   }
   .preview-controls button {
     flex: 1 1 30%; 
-    font-size: 0.9rem;
     white-space: nowrap;
   }
 }
 
-/* KHUSUS TABLET (Scale 75% & Center) */
-@media screen and (min-width: 600px) and (max-width: 1024px) {
+/* KHUSUS TABLET (Antara 600px - 1279px) */
+/* Disini kita atur Scaling A4 agar pas di tengah tablet */
+@media screen and (min-width: 600px) and (max-width: 1279px) {
   .a4-page {
     width: 210mm !important; min-height: 297mm !important; height: auto !important;
     
-    /* SCALING TABLET */
-    transform: scale(0.75);
-    transform-origin: top center; /* Titik tengah atas */
+    /* SCALING TABLET: 80% */
+    transform: scale(0.8);
+    transform-origin: top center;
     
-    margin: 0 auto !important; /* Center Horizontal */
-    margin-top: 10px !important;
-    margin-bottom: -80mm !important; /* Kompensasi ruang kosong bawah */
+    margin: 0 auto !important;
+    margin-bottom: -60mm !important; /* Hilangkan ruang kosong bawah akibat scaling */
     
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
   }
 }
 
-/* KHUSUS MOBILE (Scale 43% & Center) */
+/* KHUSUS MOBILE (< 600px) */
 @media screen and (max-width: 599px) {
   .a4-page {
     width: 210mm !important; min-height: 297mm !important; height: auto !important;
     
-    /* SCALING MOBILE */
+    /* SCALING HP: 43% */
     transform: scale(0.43); 
     transform-origin: top center; 
     
-    margin: 0 auto !important; /* Center Horizontal */
+    margin: 0 auto !important; 
     margin-top: 10px !important;
     margin-bottom: -165mm !important;
     
