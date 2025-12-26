@@ -1,0 +1,608 @@
+:root {
+  --navy: #0a1931;
+  --gold: #d4af37;
+  --gray: #f4f4f4;
+  --base-font: "Poppins", sans-serif;
+}
+
+body {
+  font-family: var(--base-font);
+  background-color: var(--gray);
+  margin: 0;
+  /* Padding atas agar konten tidak ketutup Navbar Fixed */
+  padding-top: 85px;
+  color: #333;
+  font-size: 16px;
+  overflow-x: hidden; /* Mencegah scroll horizontal pada body */
+}
+
+/* NAVBAR (FIXED) */
+.navbar {
+  background: var(--navy);
+  color: white;
+  padding: 15px 30px;
+
+  /* Properti Fixed Position */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+
+  /* Kosmetik */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-style: italic;
+  white-space: nowrap; /* Mencegah judul turun baris */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CONTAINER & LAYOUT */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  gap: 30px;
+  transition: all 0.5s ease;
+  max-width: 100vw; /* Pastikan tidak melebihi layar */
+  box-sizing: border-box;
+}
+
+/* RESPONSIVE LAYOUT (Desktop) */
+@media (min-width: 1024px) {
+  .main-container.has-preview {
+    flex-direction: row;
+  }
+  .form-section {
+    width: 100%;
+    transition: width 0.5s;
+  }
+  .main-container.has-preview .form-section {
+    width: 40%;
+  }
+  .preview-section {
+    width: 60%;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+  }
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  box-sizing: border-box;
+  /* PENTING: Agar tabel bisa di-scroll di dalam card, bukan body */
+  overflow-x: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+/* FORM STYLING */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 1024px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .full-width {
+    grid-column: span 2;
+  }
+}
+.form-group {
+  margin-bottom: 5px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--navy);
+}
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: var(--base-font);
+  font-size: 1rem;
+}
+input:focus,
+select:focus {
+  border-color: var(--navy);
+  outline: none;
+}
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+.btn-icon {
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  padding: 0 15px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+/* BUTTONS */
+.action-buttons {
+  margin-top: 25px;
+}
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  font-family: var(--base-font);
+  transition: 0.2s;
+}
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--navy);
+  width: 100%;
+}
+.btn-success {
+  background: #28a745;
+}
+.btn-secondary {
+  background: #6c757d;
+}
+.btn-danger {
+  background: #dc3545;
+}
+.btn-refresh {
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  padding: 5px 15px;
+  font-size: 0.9rem;
+}
+
+/* HISTORY TABLE */
+.history-section {
+  padding: 0 30px 30px;
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap; /* Agar tombol refresh turun jika sempit */
+  gap: 10px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  /* Tabel tetap lebar agar rapi, scroll ditangani oleh .card */
+  min-width: 800px;
+}
+th,
+td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+th {
+  background: var(--navy);
+  color: white;
+}
+
+/* ========================================================
+   PDF / A4 PAPER STYLING (Preview Area)
+   ======================================================== */
+.a4-page {
+  /* Default Desktop: Mirip Kertas Asli */
+  width: 210mm;
+  min-height: 297mm;
+  padding: 10mm 15mm 10mm 20mm;
+  background: white;
+  margin: 0 auto;
+  font-family: "Arial", sans-serif;
+  color: black;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* KOP SURAT */
+.kop-surat {
+  position: relative;
+  margin-bottom: 0px;
+  height: 85px;
+  width: 100%;
+}
+.logo-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.logo-container img {
+  height: 100px;
+  width: auto;
+}
+
+.kop-text {
+  padding-left: 50px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.kop-text .line-1 {
+  font-size: 14pt;
+  font-weight: bold;
+}
+.kop-text .line-2 {
+  font-size: 16pt;
+  font-weight: bold;
+}
+.kop-text .line-3 {
+  font-size: 11pt;
+  font-weight: bold;
+}
+
+.kop-address {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  font-size: 9pt;
+  margin-top: 2px;
+  width: 100%;
+  padding-left: 50px;
+  box-sizing: border-box;
+}
+.kop-separator {
+  border-bottom: 2px solid black;
+  margin: 5px 0 10px 0;
+}
+
+/* ISI SURAT */
+.surat-body {
+  font-size: 12pt;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+.judul-block {
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 0px;
+}
+.judul-surat {
+  font-size: 12pt;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.nomor-surat {
+  font-size: 12pt;
+  margin-bottom: 2px;
+}
+.pejabat-surat {
+  font-size: 12pt;
+  margin-top: 2px;
+}
+
+/* Reset Styles for Preview */
+.surat-body * {
+  font-weight: normal !important;
+  text-decoration: none !important;
+}
+.kop-text * {
+  font-weight: bold !important;
+}
+
+/* Layout Kolom */
+.row-content {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+.col-label {
+  width: 90px;
+  flex-shrink: 0;
+}
+.col-sep {
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.col-isi {
+  flex-grow: 1;
+  text-align: justify;
+}
+
+ol {
+  margin: 0;
+  padding-left: 20px;
+}
+li {
+  margin-bottom: 2px;
+  padding-left: 5px;
+}
+
+.section-title {
+  text-align: center;
+  margin: 8px 0;
+}
+.nip-indent {
+  display: block;
+  margin-left: 17px;
+}
+
+.ttd-section {
+  float: right;
+  width: 45%;
+  text-align: left;
+  margin-top: 15px;
+}
+.ttd-date {
+  margin-bottom: 2px;
+}
+.ttd-jabatan {
+  margin-bottom: 60px;
+  line-height: 1.1;
+  margin-top: 0px;
+}
+
+.tembusan {
+  clear: both;
+  margin-top: 5px;
+  font-size: 11pt;
+}
+.tembusan ol li {
+  margin-bottom: 0px;
+  line-height: 1.1;
+}
+
+.surat-footer {
+  position: absolute;
+  bottom: 15mm;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: "Monotype Corsiva", cursive;
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+/* === TOMBOL ACTION (ICON) === */
+.action-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.btn-action {
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+  font-size: 0.9rem;
+}
+.btn-view {
+  background-color: #17a2b8;
+}
+.btn-edit {
+  background-color: #ffc107;
+  color: #333;
+}
+.btn-delete {
+  background-color: #dc3545;
+}
+
+/* === TOAST NOTIFICATION === */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  min-width: 250px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideIn 0.3s ease-out;
+  border-left: 5px solid #333;
+}
+.toast.success {
+  border-left-color: #28a745;
+}
+.toast.success i {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+.toast.error {
+  border-left-color: #dc3545;
+}
+.toast.error i {
+  color: #dc3545;
+  font-size: 1.2rem;
+}
+.toast-message {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* ========================================================
+   MEDIA QUERY: MOBILE & TABLET (< 1024px)
+   Ini bagian penting agar tidak melebar di HP
+   ======================================================== */
+@media screen and (max-width: 1024px) {
+  /* 1. Navbar Lebih Ramping */
+  .navbar {
+    padding: 10px 20px;
+  }
+  .navbar h1 {
+    font-size: 1.1rem;
+  }
+  body {
+    padding-top: 60px;
+  } /* Sesuaikan padding body */
+
+  /* 2. Container Lebih Rapat */
+  .main-container,
+  .history-section {
+    padding: 15px;
+  }
+  .card {
+    padding: 20px;
+  }
+
+  /* 3. Preview (A4) Menjadi Responsif (Fit to Screen) */
+  .a4-page {
+    width: 100%; /* Ikuti lebar layar HP */
+    height: auto; /* Tinggi otomatis */
+    min-height: auto; /* Hapus min-height kertas */
+    padding: 15px; /* Padding lebih kecil */
+    margin: 0;
+    box-shadow: none; /* Hilangkan bayangan agar menyatu */
+    border: 1px solid #eee;
+  }
+
+  /* 4. Kop Surat Responsif di Preview */
+  .kop-surat {
+    height: auto;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .logo-container img {
+    height: 60px;
+  } /* Logo lebih kecil */
+  .kop-text {
+    padding-left: 0;
+    margin-top: 10px;
+    text-align: center;
+  }
+  .kop-text .line-1 {
+    font-size: 10pt;
+  }
+  .kop-text .line-2 {
+    font-size: 12pt;
+  }
+  .kop-text .line-3 {
+    font-size: 9pt;
+  }
+
+  .kop-address {
+    flex-direction: column;
+    padding-left: 0;
+    gap: 5px;
+    font-size: 8pt;
+  }
+  .addr-block {
+    text-align: center;
+  }
+
+  /* 5. Font Isi Surat Lebih Kecil */
+  .surat-body {
+    font-size: 10pt;
+  }
+  .judul-surat {
+    font-size: 11pt;
+  }
+
+  /* 6. Footer Relatif (Bukan Absolute) */
+  .surat-footer {
+    position: relative;
+    bottom: auto;
+    margin-top: 30px;
+    font-size: 10pt;
+  }
+}
+
+/* PRINT MODE (Tetap Kertas A4 Asli) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printArea,
+  #printArea * {
+    visibility: visible;
+  }
+  #printArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    display: block;
+    height: 100%;
+  }
+  .a4-page {
+    width: 210mm;
+    padding: 10mm 15mm 10mm 20mm;
+  } /* Paksa balik ke A4 saat print */
+  .surat-footer {
+    position: fixed;
+    bottom: 10mm;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}

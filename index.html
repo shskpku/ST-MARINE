@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Surat Tugas Marine Inspector</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&family=Times+New+Roman:ital,wght@1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Monotype+Corsiva&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <h1>SURAT TUGAS <span style="color: #d4af37">MARINE INSPECTOR</span></h1>
+    </nav>
+
+    <div class="main-container" id="mainContainer">
+      <section class="form-section">
+        <div class="card">
+          <h2><i class="fas fa-file-pen"></i> Form Surat Tugas</h2>
+          <form id="stForm">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Nomor Surat Tugas</label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    id="nomorSt"
+                    placeholder="Mengambil nomor..."
+                    style="color: #0a1931"
+                  />
+                  <button
+                    type="button"
+                    onclick="fetchNextNumber()"
+                    class="btn-icon"
+                    title="Refresh Nomor"
+                  >
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+                <small>Format: ST-KSOP.PKU.[Nomor] Tahun [Tahun]</small>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Marine Inspector (Pemeriksa)</label>
+                <select id="inspectorSelect" required>
+                  <option value="">-- Pilih Inspector --</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Tanggal Pemeriksaan</label>
+                <input type="date" id="tglPeriksa" required />
+              </div>
+              <div class="form-group">
+                <label>Hari</label>
+                <input
+                  type="text"
+                  id="hariPeriksa"
+                  readonly
+                  placeholder="Auto..."
+                />
+              </div>
+
+              <div class="form-group full-width">
+                <label>Nama Kapal</label>
+                <input
+                  type="text"
+                  id="namaKapal"
+                  placeholder="Contoh: TK. SLM 88"
+                  required
+                />
+              </div>
+              <div class="form-group full-width">
+                <label>Perusahaan Pemohon</label>
+                <input
+                  type="text"
+                  id="namaPerusahaan"
+                  placeholder="Contoh: PT. Pelayaran Nasional..."
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button type="button" id="btnGenerate" class="btn-primary">
+                <i class="fas fa-file-pdf"></i> Generate Preview
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="preview-section hidden" id="previewSection">
+        <div class="preview-controls">
+          <button id="btnSimpan" class="btn-success">
+            <i class="fas fa-save"></i> Simpan (Drive & Sheet)
+          </button>
+          <button id="btnDownload" class="btn-secondary">
+            <i class="fas fa-print"></i> Print / Download PDF
+          </button>
+          <button id="btnClosePreview" class="btn-danger">
+            <i class="fas fa-times"></i> Tutup
+          </button>
+        </div>
+
+        <div id="printArea" class="a4-page">
+          <header class="kop-surat">
+            <div class="logo-container">
+              <img src="logo-kemenhub.png" alt="Logo Kemenhub" />
+            </div>
+            <div class="kop-text">
+              <div class="line-1">KEMENTERIAN PERHUBUNGAN</div>
+              <div class="line-2">DIREKTORAT JENDERAL PERHUBUNGAN LAUT</div>
+              <div class="line-3">
+                KANTOR KESYAHBANDARAN DAN OTORITAS PELABUHAN<br />KELAS II
+                PEKANBARU
+              </div>
+            </div>
+          </header>
+
+          <div class="kop-address">
+            <div class="addr-block">
+              JL. KAMPUNG DALAM NO. 1<br />PEKANBARU - 28152
+            </div>
+            <div class="addr-block">
+              Telp: (0761) 22827, 29408<br />Email:
+              <a href="mailto:adpelpekanbaru@yahoo.com" class="email-link"
+                >adpelpekanbaru@yahoo.com</a
+              >
+            </div>
+            <div class="addr-block">FAX: (0761) 2940<br />TLX: 5316/6926</div>
+          </div>
+          <div class="kop-separator"></div>
+
+          <div class="surat-body">
+            <div class="judul-block">
+              <div class="judul-surat">SURAT TUGAS</div>
+              <div class="nomor-surat">
+                Nomor : <span id="displayNomorSt">ST-KSOP.PKU....</span>
+              </div>
+              <div class="pejabat-surat">
+                Kepala Kantor Kesyahbandaran dan Otoritas Pelabuhan Kelas II
+                Pekanbaru
+              </div>
+            </div>
+
+            <div class="row-content">
+              <div class="col-label">Dasar</div>
+              <div class="col-sep">:</div>
+              <div class="col-isi list-dasar">
+                <ol>
+                  <li>
+                    Undang-Undang Nomor 66 Tahun 2024 tentang Perubahan Ketiga
+                    atas Undang-Undang Nomor 17 tahun 2008 tentang Pelayaran;
+                  </li>
+                  <li>
+                    Peraturan Pemerintah Nomor 31 Tahun 2021 tentang
+                    Penyelenggaraan Bidang Pelayaran;
+                  </li>
+                  <li>
+                    Peraturan Menteri Perhubungan Nomor 7 Tahun 2024 tentang
+                    Harmonisasi Sistem Pemeriksaan dan Sertifikasi pada kapal
+                    Berbendera Indonesia;
+                  </li>
+                  <li>
+                    Peraturan Direktur Jenderal Perhubungan Laut
+                    No.HK.103/2/19/DJPL-16 Tentang Tata cara Pelaksanaan
+                    Penyelenggaraan Kelaiklautan Kapal;
+                  </li>
+                  <li>
+                    Surat Permohonan
+                    <span id="displayPerusahaanDasar">...</span>;
+                  </li>
+                  <li>Untuk Kepentingan Dinas.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="section-title">Memberi Tugas</div>
+
+            <div class="row-content">
+              <div class="col-label">Kepada</div>
+              <div class="col-sep">:</div>
+              <div class="col-isi">
+                <ol>
+                  <li>
+                    <span id="displayNamaPemeriksa">...</span><br />
+                    <span>NIP. <span id="displayNip">...</span></span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="row-content">
+              <div class="col-label">Untuk</div>
+              <div class="col-sep">:</div>
+              <div class="col-isi list-tugas">
+                <ol>
+                  <li>
+                    Melaksanakan Pemeriksaan Fisik Kapal
+                    <span id="displayNamaKapal">...</span> yang dilaksanakan
+                    pada hari <span id="displayHari">...</span> tanggal
+                    <span id="displayTanggal">...</span> bertempat di Pekanbaru;
+                  </li>
+                  <li>
+                    Melaporkan hasil pelaksanaan tugas kepada Kepala Kantor
+                    Kesyahbandaran dan Otoritas Pelabuhan Kelas II Pekanbaru;
+                  </li>
+                  <li>
+                    Surat Tugas ini berlaku mulai tanggal
+                    <span id="displayTanggalBerlaku">...</span> sampai dengan
+                    selesai.
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="ttd-section">
+              <div class="ttd-date">
+                Pekanbaru, <span id="displayTanggalTtd">...</span>
+              </div>
+              <div class="ttd-jabatan">
+                An. Kepala Kantor,<br />
+                Kasi Status Hukum Dan Sertifikasi Kapal
+              </div>
+              <div class="ttd-space"></div>
+              <div class="ttd-nama">Irwan Josua Hutajulu, S.Si.T, M.H</div>
+              <div class="ttd-nip">NIP. 19730927 200912 1 001</div>
+            </div>
+
+            <div class="tembusan">
+              Tembusan:
+              <ol>
+                <li>Kepala Kantor;</li>
+                <li>Kasubbag TU;</li>
+                <li>
+                  Direktur <span id="displayPerusahaanTembusan">...</span>;
+                </li>
+                <li>Yang bersangkutan;</li>
+                <li>Arsip.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="surat-footer">
+            "Mentaati Peraturan Pelayaran Berarti Mendukung Terciptanya
+            Keselamatan Berlayar"
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="history-section">
+      <div class="card full-width">
+        <div class="history-header">
+          <h3>Riwayat Surat Tugas</h3>
+          <button onclick="fetchHistory()" class="btn-refresh">
+            <i class="fas fa-sync"></i> Refresh
+          </button>
+        </div>
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th>No. ST</th>
+              <th>Tanggal</th>
+              <th>Nama Kapal</th>
+              <th>Perusahaan</th>
+              <th>Pemeriksa</th>
+              <th style="width: 150px">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" style="text-align: center">Memuat data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div id="toast-container"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
