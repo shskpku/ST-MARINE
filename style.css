@@ -606,3 +606,84 @@ li {
     margin: 0;
   }
 }
+/* HEADER TOOLS (Search & Refresh) */
+.header-tools {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  width: 250px;
+}
+.search-box input {
+  width: 100%;
+  padding: 8px 10px 8px 35px; /* Padding kiri buat icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+.search-box i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+/* PAGINATION STYLES */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+.page-info {
+  font-size: 0.9rem;
+  color: #666;
+}
+.pagination-buttons {
+  display: flex;
+  gap: 5px;
+}
+.pagination-buttons button {
+  padding: 8px 15px;
+  background: white;
+  border: 1px solid #ddd;
+  color: var(--navy);
+  font-size: 0.9rem;
+  margin: 0; /* Override margin button global */
+}
+.pagination-buttons button:hover:not(:disabled) {
+  background: var(--navy);
+  color: white;
+  transform: none;
+}
+.pagination-buttons button:disabled {
+  background: #f9f9f9;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE UNTUK HP */
+@media screen and (max-width: 768px) {
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .header-tools {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .search-box {
+    width: 100%; /* Search full width di HP */
+  }
+  .pagination-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
