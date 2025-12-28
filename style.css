@@ -137,7 +137,7 @@ select:focus {
   gap: 10px;
 }
 .btn-icon {
-  background: #eee;
+  background: var(--navy);
   border: none;
   cursor: pointer;
   padding: 0 15px;
@@ -687,3 +687,4 @@ li {
     gap: 10px;
   }
 }
+
