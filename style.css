@@ -30,7 +30,7 @@ body {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* UTILITY - CLASS HIDDEN (PENTING) */
+/* UTILITY */
 .hidden { display: none !important; }
 
 /* LAYOUT */
@@ -90,7 +90,7 @@ table { width: 100%; border-collapse: collapse; min-width: 800px; }
 th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
 th { background: var(--navy); color: white; }
 
-/* A4 PREVIEW (Base Style) */
+/* A4 PREVIEW (Desktop Default) */
 .a4-page {
   width: 210mm; min-height: 297mm; padding: 10mm 15mm 10mm 20mm;
   background: white; margin: 0 auto;
@@ -127,11 +127,8 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
 #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
 .toast { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s; border-left: 5px solid #333; }
 .toast.success { border-left-color: #28a745; } .toast.error { border-left-color: #dc3545; }
-
-/* ANIMASI (DITAMBAHKAN fadeIn) */
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* ========================================= */
 /* MEDIA QUERY: DESKTOP (> 1024px) */
@@ -140,15 +137,7 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
   .main-container.has-preview { flex-direction: row; }
   .form-section { width: 100%; transition: width 0.5s; }
   .main-container.has-preview .form-section { width: 40%; }
-  
-  /* FIX: Pastikan display block agar muncul, dan animasi fadeIn berjalan */
-  .preview-section { 
-    width: 60%; 
-    opacity: 0; 
-    animation: fadeIn 0.5s forwards; 
-    display: block; /* Penting */
-  }
-  
+  .preview-section { width: 60%; opacity: 0; animation: fadeIn 0.5s forwards; }
   .form-grid { grid-template-columns: 1fr 1fr; }
   .full-width { grid-column: span 2; }
 }
@@ -161,14 +150,14 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
   body { padding-top: 60px; }
   .main-container, .history-section { padding: 10px; } .card { padding: 15px; }
 
-  /* FIX: Hapus !important agar bisa di-hidden oleh class .hidden */
+  /* CONTAINER PREVIEW: Paksa Flexbox & Center */
   .preview-section {
-    display: flex; /* JANGAN PAKAI !IMPORTANT DISINI */
+    display: flex !important;
     flex-direction: column;
-    align-items: center; 
+    align-items: center !important; /* INI KUNCI AGAR KERTAS DI TENGAH */
     width: 100%;
     margin-top: 20px;
-    overflow: hidden;
+    overflow: hidden; /* Mencegah scroll horizontal body */
   }
   
   /* TOMBOL CONTROLS DI MOBILE */
@@ -181,7 +170,7 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
     margin-bottom: 10px;
   }
   .preview-controls button {
-    flex: 1 1 30%; 
+    flex: 1 1 30%; /* Tombol rata lebar */
     font-size: 0.8rem;
     white-space: nowrap;
   }
@@ -193,8 +182,8 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
     width: 210mm !important; min-height: 297mm !important; height: auto !important;
     transform: scale(0.7);
     transform-origin: top center;
-    margin: 0 !important; 
-    margin-bottom: -100mm !important;
+    margin: 0 !important; /* Reset margin */
+    margin-bottom: -100mm !important; /* Kompensasi ruang kosong */
   }
 }
 
@@ -205,15 +194,17 @@ ol { margin: 0; padding-left: 20px; } li { margin-bottom: 2px; padding-left: 5px
     
     /* SCALING AGAR PAS DI LAYAR HP */
     transform: scale(0.43); 
-    transform-origin: top center; 
+    transform-origin: top center; /* Mengecil ke titik tengah atas */
     
+    /* RESET MARGIN AGAR TIDAK TERDORONG KANAN/KIRI */
     margin: 0 !important; 
     margin-top: 10px !important;
-    margin-bottom: -165mm !important;
+    margin-bottom: -165mm !important; /* Tarik margin bawah agar tombol close tidak terlalu jauh */
     
     box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
   }
 
+  /* Layout HP Lainnya */
   .history-header { flex-direction: column; align-items: flex-start; }
   .history-tools { width: 100%; justify-content: space-between; }
   .search-input { width: 100%; }
