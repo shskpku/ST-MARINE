@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Surat Tugas Marine Inspector</title>
+    <link herf="logo-shsk.png" rel="icon">
     <link
       href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&family=Times+New+Roman:ital,wght@1&display=swap"
       rel="stylesheet"
@@ -268,27 +269,51 @@
       <div class="card full-width">
         <div class="history-header">
           <h3>Riwayat Surat Tugas</h3>
-          <button onclick="fetchHistory()" class="btn-refresh">
-            <i class="fas fa-sync"></i> Refresh
-          </button>
+
+          <div class="header-tools">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari Kapal / Pemeriksa..."
+              />
+            </div>
+            <button onclick="fetchHistory()" class="btn-refresh">
+              <i class="fas fa-sync"></i> Refresh
+            </button>
+          </div>
         </div>
-        <table id="historyTable">
-          <thead>
-            <tr>
-              <th>No. ST</th>
-              <th>Tanggal</th>
-              <th>Nama Kapal</th>
-              <th>Perusahaan</th>
-              <th>Pemeriksa</th>
-              <th style="width: 150px">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="6" style="text-align: center">Memuat data...</td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div class="table-responsive">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>No. ST</th>
+                <th>Tanggal</th>
+                <th>Nama Kapal</th>
+                <th>Perusahaan</th>
+                <th>Pemeriksa</th>
+                <th style="width: 150px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination-container" id="paginationContainer">
+          <span class="page-info" id="pageInfo"
+            >Menampilkan 0 - 0 dari 0 data</span
+          >
+          <div class="pagination-buttons">
+            <button id="btnPrev" onclick="changePage(-1)" disabled>
+              <i class="fas fa-chevron-left"></i> Prev
+            </button>
+            <button id="btnNext" onclick="changePage(1)" disabled>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
