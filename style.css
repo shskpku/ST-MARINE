@@ -356,7 +356,8 @@ li {
 }
 .nip-indent {
   display: block;
-  margin-left: 17px;
+  margin-left: 0; /* Ubah jadi 0 biar sejajar tegak lurus sama Nama */
+  margin-top: 2px; /* Opsional: kasih jarak dikit ke bawah biar gak nempel banget */
 }
 
 .ttd-section {
@@ -709,4 +710,184 @@ li {
    Ini mengatasi konflik dengan display: flex bawaan */
 .hidden {
   display: none !important;
+}
+/* === MULTI PAGE PREVIEW STYLES === */
+
+/* === VISUAL PEMBEDA ANTAR FORM === */
+
+/* Header Judul (Data Surat Tugas #1, #2, dst) */
+.form-separator {
+  background-color: var(--navy); /* Warna Biru Gelap */
+  color: var(--gold); /* Warna Emas biar mewah */
+  padding: 12px 20px;
+  margin-top: 30px; /* Jarak dari form sebelumnya */
+  border-radius: 8px 8px 0 0; /* Sudut atas tumpul */
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  border-bottom: 3px solid var(--gold); /* Aksen garis emas di bawah header */
+}
+
+/* Reset style lama untuk span (biar teksnya pas di tengah header) */
+.form-separator span {
+  position: static;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* Area Input Form (Dikasih kotak biar menyatu dengan headernya) */
+.form-grid {
+  background-color: #f8f9fa; /* Warna background abu sangat muda */
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-top: none; /* Hapus garis atas karena sudah ada header */
+  border-radius: 0 0 8px 8px; /* Sudut bawah tumpul */
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sedikit bayangan */
+}
+
+/* Khusus Form Grid PERTAMA (karena JS tidak memberi separator di form ke-0) 
+   Kita kasih style sedikit biar tetap rapi walaupun tanpa header */
+.form-grid[data-index="0"] {
+  border-top: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* Logic Tampilan Halaman A4 */
+/* Secara default di layar, sembunyikan semua halaman */
+.a4-page {
+  display: none;
+  margin-bottom: 30px; /* Jarak antar kertas kalau di scroll */
+}
+
+/* Hanya tampilkan halaman yang punya class 'active' */
+.a4-page.active {
+  display: flex; /* Kembalikan ke flex sesuai settingan awal .a4-page kamu */
+}
+
+/* SAAT PRINT: Tampilkan SEMUA halaman & pisah kertas */
+@media print {
+  .a4-page {
+    display: flex !important; /* Paksa tampil semua */
+    margin: 0;
+    page-break-after: always; /* Kunci: Pindah kertas setiap selesai 1 halaman */
+  }
+
+  /* Sembunyikan kontrol pagination preview saat print */
+  .preview-pagination-controls {
+    display: none !important;
+  }
+}
+/* =========================================
+   CUSTOM MODAL STYLES
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Gelap transparan */
+  z-index: 2000; /* Di atas Navbar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(3px); /* Efek blur di background */
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Saat class 'hidden' dihapus (via JS), modal muncul */
+.modal-overlay:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-box {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  transform: scale(0.8);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animasi membal */
+}
+
+.modal-overlay:not(.hidden) .modal-box {
+  transform: scale(1);
+}
+
+.modal-icon {
+  width: 70px;
+  height: 70px;
+  background: #fee2e2; /* Merah muda lembut */
+  color: #dc2626; /* Merah cabe */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 15px;
+  font-size: 2rem;
+}
+
+.modal-box h3 {
+  margin: 10px 0;
+  color: var(--navy);
+  font-size: 1.5rem;
+}
+
+.modal-box p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.warning-text {
+  font-size: 0.85rem !important;
+  color: #dc3545 !important;
+  font-style: italic;
+  margin-bottom: 25px !important;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-cancel {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100px;
+}
+.btn-cancel:hover {
+  background: #d1d5db;
+}
+
+.btn-confirm-delete {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100px;
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+}
+.btn-confirm-delete:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
 }
