@@ -1,4 +1,6 @@
-// === KONFIGURASI ===
+// =========================================
+// 1. KONFIGURASI & VARIABEL GLOBAL
+// =========================================
 const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycby8-_zLyl4pnLbaYsATG7AhRtMcrCAjwxiGZtYB1RNYMS3p2GXaOmQDe1h-HLY_oo_S/exec";
 const LOGO_LOCAL_PATH = "logo-kemenhub.png";
@@ -11,12 +13,19 @@ const inspectors = [
   { name: "Irwan Josua Hutajulu, S.Si.T, M.H", nip: "19730927 200912 1 001" },
 ];
 
-// === VARIABEL GLOBAL PAGINATION & DATA ===
-let globalHistoryData = []; // Menyimpan semua data mentah dari server
-let currentFilteredData = []; // Menyimpan data setelah difilter (search)
+// VARIABEL PAGINATION & DATA
+let globalHistoryData = [];
+let currentFilteredData = [];
 let currentPage = 1;
-const rowsPerPage = 10; // MAKSIMAL 10 DATA PER HALAMAN
+const rowsPerPage = 10;
 
+// VARIABEL MODE EDIT
+let isEditMode = false;
+let globalOldNomorSt = "";
+
+// =========================================
+// 2. INITIALIZATION (DOM READY)
+// =========================================
 document.addEventListener("DOMContentLoaded", () => {
   populateInspectors();
   setupDateListener();
@@ -29,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchNextNumber();
   fetchHistory();
 
-  // Event Listeners Tombol
+  // Event Listeners Tombol Utama
   document
     .getElementById("btnGenerate")
     .addEventListener("click", generatePreview);
@@ -41,13 +50,20 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btnDownload")
     .addEventListener("click", () => window.print());
 
-  // EVENT LISTENER SEARCH (LIVE SEARCH)
+  // Event Listeners Mode Edit
+  document
+    .getElementById("btnUnlock")
+    .addEventListener("click", enableEditForm);
+  document.getElementById("btnUpdate").addEventListener("click", updateData);
+  document
+    .getElementById("btnCancelEdit")
+    .addEventListener("click", cancelEditMode);
+
+  // Event Listener Search
   document
     .getElementById("searchInput")
     .addEventListener("keyup", function (e) {
       const term = e.target.value.toLowerCase();
-
-      // Filter data global
       currentFilteredData = globalHistoryData.filter(
         (row) =>
           row.kapal.toLowerCase().includes(term) ||
@@ -55,15 +71,171 @@ document.addEventListener("DOMContentLoaded", () => {
           row.pemeriksa.toLowerCase().includes(term) ||
           String(row.nomorSt).toLowerCase().includes(term)
       );
-
-      // Reset ke halaman 1 setiap kali mengetik
       currentPage = 1;
       renderTable();
     });
 });
 
 // =========================================
-// LOGIKA PAGINATION & RENDER TABEL
+// 3. FUNGSI EDIT & UPDATE (FITUR BARU)
+// =========================================
+
+function editHistory(index) {
+  const data = globalHistoryData[index];
+
+  // A. Simpan State Edit
+  globalOldNomorSt = data.nomorSt;
+  isEditMode = true;
+
+  // B. Scroll ke atas
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // C. Populate Form
+  document.getElementById("nomorSt").value = data.nomorSt;
+  document.getElementById("namaKapal").value = data.kapal;
+  document.getElementById("namaPerusahaan").value = data.perusahaan;
+
+  try {
+    const dateObj = new Date(data.tanggal);
+    if (!isNaN(dateObj)) {
+      document.getElementById("tglPeriksa").value = dateObj
+        .toISOString()
+        .split("T")[0];
+      document.getElementById("tglPeriksa").dispatchEvent(new Event("change"));
+    }
+  } catch (e) {}
+
+  const sel = document.getElementById("inspectorSelect");
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value) {
+      let optObj = JSON.parse(sel.options[i].value);
+      if (optObj.name === data.pemeriksa) {
+        sel.selectedIndex = i;
+        break;
+      }
+    }
+  }
+
+  // D. Kunci Form & Sembunyikan Tombol Generate
+  disableForm(true);
+  document.getElementById("btnGenerate").classList.add("hidden");
+  document.getElementById("editModeButtons").classList.add("hidden"); // Pastikan tombol edit sembunyi dulu
+
+  // E. Render & Tampilkan Preview
+  const previewData = {
+    nomorSt: data.nomorSt,
+    inspector: JSON.parse(sel.value),
+    tanggal: document.getElementById("tglPeriksa").value,
+    hari: document.getElementById("hariPeriksa").value,
+    kapal: data.kapal,
+    perusahaan: data.perusahaan,
+  };
+
+  renderPreview(previewData);
+  showPreviewSection();
+
+  // F. Munculkan Tombol Edit SETELAH Preview Muncul (Delay dikit biar smooth)
+  setTimeout(() => {
+    const editBtns = document.getElementById("editModeButtons");
+    editBtns.classList.remove("hidden");
+    editBtns.style.display = "flex";
+
+    document.getElementById("btnUnlock").classList.remove("hidden");
+    document.getElementById("btnCancelEdit").classList.remove("hidden");
+    document.getElementById("btnUpdate").classList.add("hidden"); // Simpan masih sembunyi
+
+    showToast("Mode Pratinjau. Klik 'Ubah Data' untuk mengedit.", "info");
+  }, 400);
+}
+
+function enableEditForm() {
+  disableForm(false);
+
+  // UI Changes
+  document.getElementById("btnUnlock").classList.add("hidden");
+  document.getElementById("btnUpdate").classList.remove("hidden");
+
+  // Munculkan tombol Refresh Preview (sebelumnya Generate)
+  const btnGen = document.getElementById("btnGenerate");
+  btnGen.classList.remove("hidden");
+  btnGen.innerHTML = '<i class="fas fa-sync"></i> Refresh Preview';
+
+  showToast("Form aktif. Silakan edit data.", "success");
+}
+
+function cancelEditMode() {
+  isEditMode = false;
+  globalOldNomorSt = "";
+
+  // Reset Form
+  document.getElementById("stForm").reset();
+  disableForm(false);
+
+  // Reset UI Buttons
+  const btnGen = document.getElementById("btnGenerate");
+  btnGen.classList.remove("hidden");
+  btnGen.innerHTML = '<i class="fas fa-file-pdf"></i> Generate Preview';
+
+  document.getElementById("editModeButtons").classList.add("hidden");
+  document.getElementById("editModeButtons").style.display = "none";
+
+  closePreview();
+  fetchNextNumber(); // Ambil nomor baru lagi
+}
+
+function updateData() {
+  const btn = document.getElementById("btnUpdate");
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+  btn.disabled = true;
+
+  const data = getFormData();
+  if (!validateForm(data)) {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    return;
+  }
+
+  // Payload Update
+  const payload = {
+    action: "update",
+    oldNomorSt: globalOldNomorSt,
+    ...data,
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      if (result.status === "success") {
+        showToast("✅ Data Berhasil Diperbarui!", "success");
+        cancelEditMode(); // Reset form
+        fetchHistory(); // Reload tabel
+      } else {
+        showToast("Gagal Update: " + result.message, "error");
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      showToast("Error koneksi internet.", "error");
+    })
+    .finally(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    });
+}
+
+function disableForm(isDisabled) {
+  const formInputs = document.querySelectorAll("#stForm input, #stForm select");
+  formInputs.forEach((input) => {
+    input.disabled = isDisabled;
+  });
+}
+
+// =========================================
+// 4. LOGIKA UTAMA (SAVE, GET, RENDER)
 // =========================================
 
 function fetchHistory() {
@@ -71,7 +243,6 @@ function fetchHistory() {
   tbody.innerHTML =
     '<tr><td colspan="6" style="text-align:center"><i class="fas fa-spinner fa-spin"></i> Memuat data...</td></tr>';
 
-  // Disable tombol pagination saat loading
   document.getElementById("btnPrev").disabled = true;
   document.getElementById("btnNext").disabled = true;
 
@@ -82,8 +253,8 @@ function fetchHistory() {
     .then((res) => res.json())
     .then((data) => {
       globalHistoryData = data || [];
-      currentFilteredData = globalHistoryData; // Awalnya filtered sama dengan global
-      currentPage = 1; // Reset halaman
+      currentFilteredData = globalHistoryData;
+      currentPage = 1;
       renderTable();
     })
     .catch(() => {
@@ -103,16 +274,12 @@ function renderTable() {
     return;
   }
 
-  // HITUNG INDEX DATA UNTUK HALAMAN SAAT INI
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-
-  // AMBIL POTONGAN DATA (SLICE)
   const paginatedItems = currentFilteredData.slice(startIndex, endIndex);
 
-  // LOOP RENDER DATA
   paginatedItems.forEach((row) => {
-    // Cari index ASLI di global data untuk fungsi Edit/Hapus agar tidak salah hapus
+    // Cari index asli di global data
     const originalIndex = globalHistoryData.indexOf(row);
 
     const tr = document.createElement("tr");
@@ -150,46 +317,12 @@ function renderTable() {
     tbody.appendChild(tr);
   });
 
-  // UPDATE INFO PAGINATION
   updatePaginationInfo(
     startIndex + 1,
     Math.min(endIndex, currentFilteredData.length),
     currentFilteredData.length
   );
 }
-
-function updatePaginationInfo(start, end, total) {
-  const info = document.getElementById("pageInfo");
-  const btnPrev = document.getElementById("btnPrev");
-  const btnNext = document.getElementById("btnNext");
-
-  if (total === 0) {
-    info.innerText = "Tidak ada data";
-    btnPrev.disabled = true;
-    btnNext.disabled = true;
-    return;
-  }
-
-  info.innerText = `Menampilkan ${start} - ${end} dari ${total} data`;
-
-  // Logika Tombol Prev
-  btnPrev.disabled = currentPage === 1;
-
-  // Logika Tombol Next
-  // Hitung total halaman: misal 15 data / 10 = 2 halaman
-  const totalPages = Math.ceil(total / rowsPerPage);
-  btnNext.disabled = currentPage === totalPages;
-}
-
-function changePage(direction) {
-  // direction: -1 (mundur) atau 1 (maju)
-  currentPage += direction;
-  renderTable();
-}
-
-// =========================================
-// FUNGSI STANDAR LAINNYA (TETAP SAMA)
-// =========================================
 
 function saveData() {
   const btn = document.getElementById("btnSimpan");
@@ -209,7 +342,6 @@ function saveData() {
   fetch(SCRIPT_URL, {
     method: "POST",
     body: JSON.stringify(payload),
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
   })
     .then((res) => res.json())
     .then((result) => {
@@ -234,6 +366,30 @@ function saveData() {
     });
 }
 
+function deleteHistory(nomorSt) {
+  if (confirm(`⚠️ Yakin hapus Surat Tugas No: ${nomorSt}?`)) {
+    showToast("Sedang menghapus...", "success");
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "delete", nomorSt: nomorSt }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          showToast("Data berhasil dihapus.", "success");
+          fetchHistory();
+          fetchNextNumber();
+        } else {
+          showToast("Gagal menghapus.", "error");
+        }
+      });
+  }
+}
+
+// =========================================
+// 5. HELPER FUNCTIONS
+// =========================================
+
 function generatePreview() {
   const data = getFormData();
   if (!validateForm(data)) return;
@@ -242,6 +398,9 @@ function generatePreview() {
 }
 
 function fetchNextNumber() {
+  // Jika sedang mode edit, jangan ambil nomor baru
+  if (isEditMode) return;
+
   const input = document.getElementById("nomorSt");
   if (input.value && input.value.includes("Tahun")) return;
   input.placeholder = "Mengambil nomor...";
@@ -266,84 +425,31 @@ function fetchNextNumber() {
 }
 
 function viewHistory(index) {
+  // Fungsi View Biasa (Read Only tanpa opsi Edit form)
   const data = globalHistoryData[index];
   const inspector = inspectors.find((i) => i.name === data.pemeriksa) || {
     name: data.pemeriksa,
     nip: "-",
   };
 
-  document.getElementById("displayNomorSt").innerText = data.nomorSt;
-  document.getElementById("displayPerusahaanDasar").innerText = data.perusahaan;
-  document.getElementById("displayNamaPemeriksa").innerText = inspector.name;
-  document.getElementById("displayNip").innerText = inspector.nip;
-  document.getElementById("displayNamaKapal").innerText = data.kapal;
+  // Render object dummy untuk preview
+  const viewData = {
+    nomorSt: data.nomorSt,
+    inspector: inspector,
+    tanggal: data.tanggal,
+    hari: new Intl.DateTimeFormat("id-ID", { weekday: "long" }).format(
+      new Date(data.tanggal)
+    ),
+    kapal: data.kapal,
+    perusahaan: data.perusahaan,
+  };
 
-  const d = new Date(data.tanggal);
-  const hari = isNaN(d)
-    ? "-"
-    : new Intl.DateTimeFormat("id-ID", { weekday: "long" }).format(d);
-  const formattedDate = formatDateIndo(data.tanggal);
-
-  document.getElementById("displayHari").innerText = hari;
-  document.getElementById("displayTanggal").innerText = formattedDate;
-  document.getElementById("displayTanggalBerlaku").innerText = formattedDate;
-  document.getElementById("displayTanggalTtd").innerText = formattedDate;
-  document.getElementById("displayPerusahaanTembusan").innerText =
-    data.perusahaan;
-
+  renderPreview(viewData);
   showPreviewSection();
-}
 
-function editHistory(index) {
-  const data = globalHistoryData[index];
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  closePreview();
-
-  document.getElementById("nomorSt").value = data.nomorSt;
-  document.getElementById("namaKapal").value = data.kapal;
-  document.getElementById("namaPerusahaan").value = data.perusahaan;
-
-  try {
-    const dateObj = new Date(data.tanggal);
-    if (!isNaN(dateObj)) {
-      document.getElementById("tglPeriksa").value = dateObj
-        .toISOString()
-        .split("T")[0];
-      document.getElementById("tglPeriksa").dispatchEvent(new Event("change"));
-    }
-  } catch (e) {}
-
-  const sel = document.getElementById("inspectorSelect");
-  for (let i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].value) {
-      let optObj = JSON.parse(sel.options[i].value);
-      if (optObj.name === data.pemeriksa) {
-        sel.selectedIndex = i;
-        break;
-      }
-    }
-  }
-  showToast("Data dimuat ke formulir.", "success");
-}
-
-function deleteHistory(nomorSt) {
-  if (confirm(`⚠️ Yakin hapus Surat Tugas No: ${nomorSt}?`)) {
-    showToast("Sedang menghapus...", "success");
-    fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "delete", nomorSt: nomorSt }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          showToast("Data berhasil dihapus.", "success");
-          fetchHistory();
-          fetchNextNumber();
-        } else {
-          showToast("Gagal menghapus.", "error");
-        }
-      });
-  }
+  // Pastikan tombol edit mode tidak muncul di mode View biasa
+  document.getElementById("editModeButtons").classList.add("hidden");
+  document.getElementById("editModeButtons").style.display = "none";
 }
 
 function getFormData() {
@@ -395,6 +501,12 @@ function showPreviewSection() {
     document
       .getElementById("previewSection")
       .scrollIntoView({ behavior: "smooth" });
+}
+
+function closePreview() {
+  document.getElementById("mainContainer").classList.remove("has-preview");
+  document.getElementById("previewSection").classList.add("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function showToast(message, type = "success") {
@@ -456,8 +568,29 @@ function formatDateIndo(str) {
     : `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function closePreview() {
-  document.getElementById("mainContainer").classList.remove("has-preview");
-  document.getElementById("previewSection").classList.add("hidden");
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function updatePaginationInfo(start, end, total) {
+  const info = document.getElementById("pageInfo");
+  const btnPrev = document.getElementById("btnPrev");
+  const btnNext = document.getElementById("btnNext");
+
+  if (total === 0) {
+    info.innerText = "Tidak ada data";
+    btnPrev.disabled = true;
+    btnNext.disabled = true;
+    return;
+  }
+
+  info.innerText = `Menampilkan ${start} - ${end} dari ${total} data`;
+  btnPrev.disabled = currentPage === 1;
+  const totalPages = Math.ceil(total / rowsPerPage);
+  btnNext.disabled = currentPage === totalPages;
+
+  // Set onclick untuk pagination (karena ini bukan listener statis)
+  btnPrev.onclick = () => changePage(-1);
+  btnNext.onclick = () => changePage(1);
+}
+
+function changePage(direction) {
+  currentPage += direction;
+  renderTable();
 }
