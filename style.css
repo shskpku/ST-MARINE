@@ -687,4 +687,26 @@ li {
     gap: 10px;
   }
 }
+/* =========================================
+   TAMBAHAN KHUSUS MODE EDIT
+   (Taruh di paling bawah file CSS)
+   ========================================= */
 
+/* Container tombol edit supaya berjejer rapi */
+#editModeButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Pastikan tombol di dalam mode edit mengisi ruang jika di HP */
+#editModeButtons button {
+  flex-grow: 1;
+}
+
+/* PENTING: Paksa sembunyikan elemen jika ada class hidden.
+   Ini mengatasi konflik dengan display: flex bawaan */
+.hidden {
+  display: none !important;
+}
