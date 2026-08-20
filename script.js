@@ -332,8 +332,8 @@ function getSuratTemplateHTML(data) {
         <div class="ttd-date">Pekanbaru, ${formattedDate}</div>
         <div class="ttd-jabatan">An. Kepala Kantor,<br />Plh. Kasi Status Hukum Dan Sertifikasi Kapal</div>
         <div class="ttd-space"></div>
-        <div class="ttd-nama">Irwan Josua Hutajulu, S.Si.T, M.H</div>
-        <div class="ttd-nip">NIP. 19730927 200912 1 001</div>
+        <div class="ttd-nama">Anton Sujarwadi, S.Si.T, M.H</div>
+        <div class="ttd-nip">NIP. 19800622 200812 1 001</div>
       </div>
 
       <div class="tembusan">
